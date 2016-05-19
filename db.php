@@ -42,9 +42,14 @@ class DB {
 
   public function save($table, $data)
   {
-//    if (!$this->update($table, $data)) {
-      $this->insert($table, $data);
+//    if (!$this->insert($table, $data)) {
+//      $this->update($table, $data);
 //    }
+    try {
+      $this->insert($table, $data);
+    } catch (PDOException $e) {
+      $this->update($table, $data);
+    }
   }
 
   public function insert($table, $data) {
@@ -55,8 +60,23 @@ class DB {
   }
 
   public function update($table, $data) {
+    $data = array_reverse($data);
+    $dataKeys = array_keys($data);
+    $matchValue = array_pop($data);
+    $matchName = $dataKeys[count($dataKeys) - 1];
+    array_pop($dataKeys);
     $this->_stmt = $this->_dbh->prepare('UPDATE ' . $table .
-      ' SET ' . implode('=?,', array_keys($data)) . '=?');
+      ' SET ' . implode('=?,', $dataKeys) . '=? WHERE ' . $matchName . '=?');
+    $data[$matchName] = $matchValue;
+//    print_r($dataKeys);
+//    print_r($data);
     return $this->_stmt->execute(array_values($data));
+  }
+
+  public function getAll($table) {
+//    $this->_stmt = $this->_dbh->prepare('SELECT * FROM ' . $table);
+//    $this->_stmt->execute();
+//    return $this->_stmt->fetchAll();
+    return $this->_dbh->query('SELECT * FROM ' . $table)->fetchAll(PDO::FETCH_ASSOC);
   }
 }
