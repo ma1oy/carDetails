@@ -1,0 +1,23 @@
+{
+    "name": "ma1oy/car-details",
+    "description": "klan.com.ua parser",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roman Shevchenko",
+            "email": "sheva2012h@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "coderockr/php-query": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "/App"
+        },
+        "files": [
+            "helpers.php"
+        ]
+    }
+}
