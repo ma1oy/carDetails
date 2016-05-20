@@ -13,11 +13,10 @@
         "coderockr/php-query": "dev-master"
     },
     "autoload": {
-        "psr-4": {
-            "App\\": "/App"
-        },
         "files": [
-            "helpers.php"
+            "lib/db.php",
+            "lib/curl.php",
+            "lib/helpers.php"
         ]
     }
 }

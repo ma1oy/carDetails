@@ -7,21 +7,9 @@ namespace Composer\Autoload;
 class ComposerStaticInit218b7220866084a86ff000ab42617317
 {
     public static $files = array (
-        '274506cc60f14c0b103b3d3d65a0e934' => __DIR__ . '/../..' . '/helpers.php',
-    );
-
-    public static $prefixLengthsPsr4 = array (
-        'A' => 
-        array (
-            'App\\' => 4,
-        ),
-    );
-
-    public static $prefixDirsPsr4 = array (
-        'App\\' => 
-        array (
-            0 => '/App',
-        ),
+        '407b15e7cf6f70a6487790150c68eacb' => __DIR__ . '/../..' . '/lib/db.php',
+        'e9fa0111fea91b54c13e51e924fa16ec' => __DIR__ . '/../..' . '/lib/curl.php',
+        '2351ab71f3bf203849a371a8593eb4e2' => __DIR__ . '/../..' . '/lib/helpers.php',
     );
 
     public static $prefixesPsr0 = array (
@@ -37,8 +25,6 @@ class ComposerStaticInit218b7220866084a86ff000ab42617317
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit218b7220866084a86ff000ab42617317::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit218b7220866084a86ff000ab42617317::$prefixDirsPsr4;
             $loader->prefixesPsr0 = ComposerStaticInit218b7220866084a86ff000ab42617317::$prefixesPsr0;
 
         }, null, ClassLoader::class);

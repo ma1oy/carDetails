@@ -58,3 +58,13 @@ function getAttributes($attributes) {
 function getVendor($attributes) {
     return explode(':', explode(PHP_EOL, trim($attributes))[0])[1];
 }
+
+function url($abs, $rel) {
+  if ($rel) {
+    if (substr($rel, 0, 4) == 'http') {
+      return $rel;
+    }
+    return $abs . $rel;
+  }
+  return '';
+}
