@@ -31,7 +31,7 @@ function addNode($pNode, $categoriesMatches, &$categoriesArray) {
 function getCategories($script) {
   $categoriesArray = [];
   $categoriesMatches = [];
-  preg_match_all('/(?<=.add\()(.+?)(?=\);)/', $script, $categoriesMatches);
+  preg_match_all('/(?<=\.add\()(.+?)(?=\)\;)/', $script, $categoriesMatches);
 //  preg_match_all('/(?<=.add\()(.+?)(?=(,\'\',)|(,\'&nbsp;\'\);))/', $script, $categoriesMatches);
 
   return addNode([10001, -1, 0, 0, 0, 0], $categoriesMatches[0], $categoriesArray);

@@ -87,10 +87,3 @@ CREATE TABLE car_product_attr_to_product
   CONSTRAINT car_product_attr_to_product_car_products_id_fk FOREIGN KEY (id_product) REFERENCES car_products (id),
   CONSTRAINT car_product_attr_to_product_car_product_attributes_id_fk FOREIGN KEY (id_attr) REFERENCES car_product_attributes (id)
 );
-
-
-SELECT car_models.name, car_brands.name
-FROM car_models
-  LEFT JOIN car_brands
-    ON car_models.brand_id = car_brands.id;
-

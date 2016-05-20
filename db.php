@@ -33,13 +33,6 @@ class DB {
     return self::$_instance;
   }
 
-//  public function save($table, $data) {
-//    $this->_stmt = $this->_dbh->prepare('INSERT INTO ' . $table .
-//      '(' . implode(',', array_keys($data)) . ')' .
-//      ' VALUES (?' . str_repeat(',?', count($data) - 1) . ')');
-//    $this->_stmt->execute(array_values($data));
-//  }
-
   public function save($table, $data)
   {
 //    if (!$this->insert($table, $data)) {
