@@ -49,12 +49,13 @@ foreach ($brands as $brandIndex => $brand) {
       $modelCell = pq($model)->children('td');
       $model_years = getYears($modelCell->eq(2)->text());
       $modificationReferenceTag = $modelCell->eq(1)->children('a');
+      $modelImageReference = $modelCell->eq(0)->children('a')->children('img')->attr('src');
 
 //      echo 'MODEL: ' . trim($modificationReferenceTag->text()) . PHP_EOL;
       $db->save('car_models', [
         'id'                    => $modelsCount + $modelIndex,
         'name'                  => trim($modificationReferenceTag->text()),
-        'image_src'             => $url . $modelCell->eq(0)->children('a')->children('img')->attr('src'),
+        'image_src'             => $modelImageReference ? ($url . $modelImageReference) : '',
         'year_manufacture'      => $model_years[0],
         'year_end_manufacture'  => $model_years[1],
         'brand_id'              => $brandIndex
@@ -88,6 +89,7 @@ foreach ($brands as $brandIndex => $brand) {
         $categoriesHTML = phpQuery::newDocument(file_get_contents_repeat($categoriesUrl));
         $categories = getCategories($categoriesHTML->
           find('body > div.page-container > div.page-wrap > section div.all-table div.left-table > div.dtree_hd + script')->text());
+        $modificationImageReference = $categoriesHTML->find('.all-table > .right-table > .image-cars > img:first')->attr('src');
 
         foreach ($categories as $category) {
 //          echo 'CATEGORY: ' . $category[2] . PHP_EOL;
@@ -95,6 +97,12 @@ foreach ($brands as $brandIndex => $brand) {
             'id'        => $category[0],
             'parent_id' => $category[1],
             'name'      => str_replace('\'', '', $category[2])
+          ]);
+
+
+          $db->update('car_modifications', [
+            'id' => $modificationsCount + $modificationIndex,
+            'image_src' => $modificationImageReference ? ($url . $modificationImageReference) : ''
           ]);
 
 //          echo $category[3] . PHP_EOL;
@@ -196,7 +204,7 @@ foreach ($brands as $brandIndex => $brand) {
           phpQuery::unloadDocuments($productsHTML);
 
           $productsCount += count($products);
-          echo $productsCount . PHP_EOL;
+          echo ' ' . $productsCount . ' ';
         }
         phpQuery::unloadDocuments($categoriesHTML);
       }

@@ -30,7 +30,6 @@ CREATE TABLE car_modifications
   id INT PRIMARY KEY NOT NULL,
   name VARCHAR(100),
   car_model_id INT,
-  parent_id INT,
   image_src VARCHAR(255),
   year_manufacture VARCHAR(10),
   year_end_manufacture VARCHAR(10),
