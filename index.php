@@ -6,7 +6,7 @@ $url = 'http://klan.com.ua';
 $log = 'log.txt';
 
 $db = DB::getInstance();
-$logHandle = fopen($log, 'w+b');
+//$logHandle = fopen($log, 'w+b');
 $modelsCount = 0;
 $modificationsCount = 0;
 $productsCount = 0;
@@ -20,7 +20,7 @@ foreach ($brands as $brandIndex => $brand) {
   $brandReferenceTag = pq($brand)->children('a');
   $brandName = trim($brandReferenceTag->text());
 //------------------------------------------------------------ ЗАПИСЬ В ЛОГ ФАЙЛ -------------------------------------------------------------
-  fwrite($logHandle, PHP_EOL . PHP_EOL . 'BRAND: ' . $brandName . PHP_EOL . PHP_EOL);
+//  fwrite($logHandle, PHP_EOL . PHP_EOL . 'BRAND: ' . $brandName . PHP_EOL . PHP_EOL);
 
 //  echo 'BRAND: ' . trim($brandReferenceTag->text()) . PHP_EOL;
   $db->save('car_brands', [
@@ -31,7 +31,7 @@ foreach ($brands as $brandIndex => $brand) {
   $modelGroupsUrl = $url . $brandReferenceTag->attr('href');
 //  echo $modelGroupsUrl . PHP_EOL;
 //------------------------------------------------------------ ЗАПИСЬ В ЛОГ ФАЙЛ -------------------------------------------------------------
-  fwrite($logHandle, 'MODEL_GROUPS: ' . $modelGroupsUrl . PHP_EOL);
+//  fwrite($logHandle, 'MODEL_GROUPS: ' . $modelGroupsUrl . PHP_EOL);
   $modelGroupsHTML = phpQuery::newDocument(file_get_contents_repeat($modelGroupsUrl));
   $modelGroups = $modelGroupsHTML->find('form#table_form > table.row_model_group_table')->children('tr[id*="tr"]');
 
@@ -41,7 +41,7 @@ foreach ($brands as $brandIndex => $brand) {
     $modelsUrl = $url . $modelReferenceTag->attr('href');
 //    echo $modelsUrl . PHP_EOL;
 //------------------------------------------------------------ ЗАПИСЬ В ЛОГ ФАЙЛ -------------------------------------------------------------
-    fwrite($logHandle, 'MODELS: ' . $modelsUrl . PHP_EOL);
+//    fwrite($logHandle, 'MODELS: ' . $modelsUrl . PHP_EOL);
     $modelsHTML = phpQuery::newDocument(file_get_contents_repeat($modelsUrl/* . '/?data[is_actual]=0' */));
     $models = $modelsHTML->find('form#table_form > table.row_model_table')->children('tr[id*="tr"]');
 
@@ -64,7 +64,7 @@ foreach ($brands as $brandIndex => $brand) {
       $modificationsUrl = $url . $modificationReferenceTag->attr('href');
 //      echo $modificationsUrl;
 //------------------------------------------------------------ ЗАПИСЬ В ЛОГ ФАЙЛ -------------------------------------------------------------
-      fwrite($logHandle, 'MODIFICATIONS: ' . $modificationsUrl . PHP_EOL);
+//      fwrite($logHandle, 'MODIFICATIONS: ' . $modificationsUrl . PHP_EOL);
       $modificationsHTML = phpQuery::newDocument(file_get_contents_repeat($modificationsUrl));
       $modifications = $modificationsHTML->find('form#table_form > table.row_modeldetail_table')->children('tr[id*="tr"]');
 
@@ -85,7 +85,7 @@ foreach ($brands as $brandIndex => $brand) {
         $categoriesUrl = $url . $categoriesReferenceTag->attr('href');
 //        echo $categoriesUrl . PHP_EOL;
 //------------------------------------------------------------ ЗАПИСЬ В ЛОГ ФАЙЛ -------------------------------------------------------------
-        fwrite($logHandle, 'CATEGORIES: ' . $categoriesUrl . PHP_EOL);
+//        fwrite($logHandle, 'CATEGORIES: ' . $categoriesUrl . PHP_EOL);
         $categoriesHTML = phpQuery::newDocument(file_get_contents_repeat($categoriesUrl));
         $categories = getCategories($categoriesHTML->
           find('body > div.page-container > div.page-wrap > section div.all-table div.left-table > div.dtree_hd + script')->text());
@@ -109,7 +109,7 @@ foreach ($brands as $brandIndex => $brand) {
           $productsUrl = $url . str_replace('\'', '', $category[3]);
 //          echo $productsUrl;
 //------------------------------------------------------------ ЗАПИСЬ В ЛОГ ФАЙЛ -------------------------------------------------------------
-          fwrite($logHandle, 'PRODUCTS: ' . $productsUrl . PHP_EOL);
+//          fwrite($logHandle, 'PRODUCTS: ' . $productsUrl . PHP_EOL);
           $productsHTML = phpQuery::newDocument(file_get_contents_repeat($productsUrl));
           $products = $productsHTML->find('form#table_form > table.row_part_table')->children('tr[id*="tr"');
 
@@ -146,7 +146,7 @@ foreach ($brands as $brandIndex => $brand) {
             $attributesUrl = $url . $attributesReferenceTag->attr('href');
 //            echo $attributesUrl . PHP_EOL;
 //------------------------------------------------------------ ЗАПИСЬ В ЛОГ ФАЙЛ -------------------------------------------------------------
-            fwrite($logHandle, 'ATTRIBUTES: ' . $attributesUrl . PHP_EOL);
+//            fwrite($logHandle, 'ATTRIBUTES: ' . $attributesUrl . PHP_EOL);
             $attributesContent = file_get_contents_repeat($attributesUrl);
 
             if ($attributesContent) {
@@ -219,5 +219,5 @@ foreach ($brands as $brandIndex => $brand) {
   phpQuery::unloadDocuments($modelGroupsHTML);
 }
 phpQuery::unloadDocuments();
-fclose($logHandle);
+//fclose($logHandle);
 //phpQuery::unloadDocuments($html);
