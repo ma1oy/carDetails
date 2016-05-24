@@ -11,6 +11,9 @@ $modelsCount = 0;
 $modificationsCount = 0;
 $productsCount = 0;
 $attributesCount = 0;
+//$attributesFromDb = [];
+
+$uniqueAttributesCount = 0;
 
 $html = $curl->set($url);
 phpQuery::newDocument($curl->getContent($html));
@@ -34,8 +37,8 @@ foreach ($brands as $brandIndex => $brand) {
 //  fwrite($logHandle, 'MODEL_GROUPS: ' . $modelGroupsUrl . PHP_EOL);
   $modelGroupsConnection = $curl->set($modelGroupsUrl);
   $modelGroupsHTML = phpQuery::newDocument($curl->getContent($modelGroupsConnection));
-  $modelGroups = $modelGroupsHTML->find('form#table_form > table.row_model_group_table')
-    ->children('tr[id*="tr"]');
+//  $modelGroups = $modelGroupsHTML->find('form#table_form > table.row_model_group_table')->children('tr[id*="tr"]');
+  $modelGroups = $modelGroupsHTML->find('.datatable')->children('tr[id*="tr"]');
 
   foreach ($modelGroups as $modelGroupIndex => $modelGroup) {
     $modelGroupCell = pq($modelGroup)->children('td');
@@ -46,8 +49,8 @@ foreach ($brands as $brandIndex => $brand) {
 //    fwrite($logHandle, 'MODELS: ' . $modelsUrl . PHP_EOL);
     $modelsConnection = $curl->set($modelsUrl/* . '/?data[is_actual]=0' */);
     $modelsHTML = phpQuery::newDocument($curl->getContent($modelsConnection));
-    $models = $modelsHTML->find('form#table_form > table.row_model_table')
-      ->children('tr[id*="tr"]');
+//    $models = $modelsHTML->find('form#table_form > table.row_model_table')->children('tr[id*="tr"]');
+    $models = $modelsHTML->find('.datatable')->children('tr[id*="tr"]');
 
     foreach ($models as $modelIndex => $model) {
       $modelCell = pq($model)->children('td');
@@ -71,15 +74,13 @@ foreach ($brands as $brandIndex => $brand) {
 //      fwrite($logHandle, 'MODIFICATIONS: ' . $modificationsUrl . PHP_EOL);
       $modificationsConnection = $curl->set($modificationsUrl);
       $modificationsHTML = phpQuery::newDocument($curl->getContent($modificationsConnection));
-      $modifications = $modificationsHTML->find('form#table_form > table.row_modeldetail_table')
-        ->children('tr[id*="tr"]');
+//      $modifications = $modificationsHTML->find('form#table_form > table.row_modeldetail_table')->children('tr[id*="tr"]');
+      $modifications = $modificationsHTML->find('.datatable')->children('tr[id*="tr"]');
 
       foreach ($modifications as $modificationIndex => $modification) {
         $modificationCell = pq($modification)->children('td');
-        $modification_years = getYears($modificationCell->eq(1)
-          ->text());
-        $categoriesReferenceTag = $modificationCell->eq(0)
-          ->children('a');
+        $modification_years = getYears($modificationCell->eq(1)->text());
+        $categoriesReferenceTag = $modificationCell->eq(0)->children('a');
 
         //        echo 'MODIFICATION: ' . trim($categoriesReferenceTag->text()) . PHP_EOL;
         $db->save('car_modifications', [
@@ -96,8 +97,10 @@ foreach ($brands as $brandIndex => $brand) {
 //        fwrite($logHandle, 'CATEGORIES: ' . $categoriesUrl . PHP_EOL);
         $categoriesConnection = $curl->set($categoriesUrl);
         $categoriesHTML = phpQuery::newDocument($curl->getContent($categoriesConnection));
-        $categories = getCategories($categoriesHTML->find('body > div.page-container > div.page-wrap > section div.all-table div.left-table > div.dtree_hd + script')->text());
-        $modificationImageReference = $categoriesHTML->find('.all-table > .right-table > .image-cars > img:first')->attr('src');
+//        $categories = getCategories($categoriesHTML->find('body > div.page-container > div.page-wrap > section div.all-table div.left-table > div.dtree_hd + script')->text());
+        $categories = getCategories($categoriesHTML->find('.dtree_hd + script')->text());
+//        $modificationImageReference = $categoriesHTML->find('.all-table > .right-table > .image-cars > img:first')->attr('src');
+        $modificationImageReference = $categoriesHTML->find('.image-cars > img:first')->attr('src');
 
         foreach ($categories as $category) {
           //          echo 'CATEGORY: ' . $category[2] . PHP_EOL;
@@ -120,7 +123,8 @@ foreach ($brands as $brandIndex => $brand) {
 //          fwrite($logHandle, 'PRODUCTS: ' . $productsUrl . PHP_EOL);
           $productsConnection = $curl->set($productsUrl);
           $productsHTML = phpQuery::newDocument($curl->getContent($productsConnection));
-          $products = $productsHTML->find('form#table_form > table.row_part_table')->children('tr[id*="tr"');
+//          $products = $productsHTML->find('form#table_form > table.row_part_table')->children('tr[id*="tr"');
+          $products = $productsHTML->find('.datatable')->children('tr[id*="tr"');
 
           foreach ($products as $productIndex => $product) {
             $productCell = pq($product)->children('td');
@@ -160,7 +164,8 @@ foreach ($brands as $brandIndex => $brand) {
 
             if ($attributesConnection) {
               $attributesHTML = phpQuery::newDocument($curl->getContent($attributesConnection));
-              $attributesCell = $attributesHTML->find('.inner > .cat-5-content > div.p-info > span:first');
+//              $attributesCell = $attributesHTML->find('.inner > .cat-5-content > div.p-info > span:first');
+              $attributesCell = $attributesHTML->find('.p-info > span:first');
               $attributesRows = $attributesCell->find('tr');
               $attributes = getAttributes($attributesRows->text());
               $attributesRows->remove();
@@ -171,37 +176,55 @@ foreach ($brands as $brandIndex => $brand) {
 //                'name'        => trim($attributesHTML->find('.cat-5-content > [itemprop*="name"]')->text()),
 //                'image_src'   => $attributesHTML->find('.p-images > a')->children('img')->attr('src'),
                 'vendor'      => $attributeVendor,
-                'vendor_code' => trim(explode(':', $attributesHTML->find('.cat-5-content > .p-code')
+//                'vendor_code' => trim(explode(':', $attributesHTML->find('.cat-5-content > .p-code')
+                'vendor_code' => trim(explode(':', $attributesHTML->find('.p-code')
                   ->text())[1])
               ]);
 
               if ($attributes) {
                 foreach ($attributes[0] as $attributeIndex => $attribute) {
-                  $attributesFromDb = $db->getAll('car_product_attributes');
-                  $dbHasAttribute = FALSE;
-                  $attributeId = 0;
-                  foreach ($attributesFromDb as $attributeFromDbIndex => $attributeFromDb) {
-                    if ($attribute == $attributeFromDb['name']) {
-                      $dbHasAttribute = TRUE;
-                      $attributeId = $attributeFromDbIndex;
-                      break;
-                    }
-                  }
-                  if (!$dbHasAttribute) {
-                    $attributeId = count($attributesFromDb);
+//                  $attributesFromDb = $db->getAll('car_product_attributes');
 
-//                    echo 'ATTRIBUTE: ' . trim($attribute) . PHP_EOL;
-                    $db->save('car_product_attributes', [
-                      'id'    => $attributeId,
-                      'name'  => $attributes[0][$attributeIndex]
+                  $uniqueAttributeIndex = $uniqueAttributesCount;
+                  $uniqueAttribute = $db->select('car_product_attributes', ['id'], ['name' => $attribute]);
+                  if ($uniqueAttribute) {
+                    $uniqueAttributeIndex = $uniqueAttribute[0] - 1;
+                  } else {
+                    $db->insert('car_product_attributes', [
+                      'id'    => $uniqueAttributesCount,
+                      'name'  => $attribute
                     ]);
+                    ++$uniqueAttributesCount;
                   }
+
+//                  $dbHasAttribute = FALSE;
+//                  $attributeId = 0;
+//                  foreach ($attributesFromDb as $attributeFromDbIndex => $attributeFromDb) {
+////                    if ($attribute == $attributeFromDb['name']) {
+//                    if ($attribute == $attributeFromDb) {
+//                      $dbHasAttribute = TRUE;
+//                      $attributeId = $attributeFromDbIndex;
+//                      break;
+//                    }
+//                    else $add = true;
+//                  }
+//                  if (!$dbHasAttribute) {
+//                    $attributesFromDb[] = $attribute; // !!!
+//                    $attributeId = count($attributesFromDb);
+//
+////                    echo 'ATTRIBUTE: ' . trim($attribute) . PHP_EOL;
+//                    $db->save('car_product_attributes', [
+//                      'id'    => $attributeId,
+//                      'name'  => $attributes[0][$attributeIndex]
+//                    ]);
+//                  }
 
                   echo '.';
                   $db->save('car_product_attr_to_product', [
                     'id'          => $attributesCount + $attributeIndex,
                     'id_product'  => $productsCount + $productIndex,
-                    'id_attr'     => $attributeId,
+//                    'id_attr'     => $attributeId,
+                    'id_attr'     => $uniqueAttributeIndex,
                     'value'       => $attributes[1][$attributeIndex]
                   ]);
                 }
