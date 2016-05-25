@@ -56,8 +56,8 @@ class DB {
     $this->_stmt = $this->_dbh->prepare('SELECT ' . implode(',', $what) . ' FROM ' . $table .
       ' WHERE ' . array_keys($data)[0] . '=?');
     $this->_stmt->execute(array_values($data));
-//    return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $this->_stmt->fetchAll(PDO::FETCH_BOUND);
+    return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+//    return $this->_stmt->fetchAll(PDO::FETCH_BOUND);
   }
 
   public function update($table, $data) {

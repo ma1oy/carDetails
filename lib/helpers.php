@@ -18,9 +18,9 @@ function addNode($pNode, $categoriesMatches, &$categoriesArray) {
     if ($category[1] == $pNode[0]) {
       $categoriesArray[] = $category;
 
-      $lastIndex = count($categoriesArray) - 1;
-      $categoriesArray[$lastIndex][0] -= 10001;
-      $categoriesArray[$lastIndex][1] -= 10001;
+//      $lastIndex = count($categoriesArray) - 1;
+//      $categoriesArray[$lastIndex][0] -= 10001;
+//      $categoriesArray[$lastIndex][1] -= 10001;
 
       addNode($category, $categoriesMatches, $categoriesArray);
     }
@@ -47,8 +47,8 @@ function getAttributes($attributes) {
     $secondPartArr = explode(PHP_EOL, trim($attributes));
     foreach ($secondPartArr as $item) {
       $parts = explode(':', $item);
-      $out[0][] = trim($parts[0]);
-      $out[1][] = trim($parts[1]);
+      if ($parts[0]) $out[0][] = trim($parts[0]); else return false;
+      $out[1][] = $parts[1] ?: trim($parts[1]);
     }
     return $out;
   }
